@@ -14,7 +14,10 @@ export class UsersService {
   // Use Case for creating a new user
   create(createUserDto: CreateUserDto) {
     const isRegistered = async () => {
-      const user = await this.usersDocument.findOne();
+      const user = await this.usersDocument.findOne({
+        email: createUserDto.email,
+      });
+
       return user;
     };
 
@@ -25,32 +28,4 @@ export class UsersService {
 
     return this.usersDocument.create(createUserDto);
   }
-  /* 
-  // Return the matching user by user.id
-  findOneById(id: string) {
-    return this.usersDocument.findOneById(id);
-  }
-
-  // Return the matching user by user.email
-  findOneByEmail(email: string) {
-    return this.usersDocument.findOneByEmail(email);
-  }
-
-  // List all users
-  findAll() {
-    // todo: add limit
-    // todo: add pagination
-    // todo: add sorting
-    return this.usersDocument.findAll();
-  }
-
-  // Update the matching user with provided data
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersDocument.update(id, updateUserDto);
-  }
-
-  // Exclude the matching user
-  exclude(id: string) {
-    return this.usersDocument.exclude(id);
-  } */
 }

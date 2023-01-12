@@ -15,11 +15,12 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  // Calls case use create method passing a JSON object with user data.
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-
+  /*
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -43,5 +44,5 @@ export class UsersController {
   @Delete(':id')
   exclude(@Param('id') id: string) {
     return this.usersService.exclude(id);
-  }
+  } */
 }

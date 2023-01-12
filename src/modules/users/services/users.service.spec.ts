@@ -1,40 +1,76 @@
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { User } from '../schemas/user.schema';
 import { UsersService } from './users.service';
+import { Model } from 'mongoose';
 
-let usersService: UsersService;
-
-const factoryUserData = (): CreateUserDto => {
-  const userData = {
-    email: `${randomUUID}@angelon.app`,
+const createUserDto = (): CreateUserDto => {
+  const uuid = randomUUID() as string;
+  const data = {
+    email: `${uuid}@angelon.app`,
     password: 'Password.42',
     name: 'John Doe',
-    mobile: '5583991446999',
+    mobile: '14155550132',
   };
-  return userData;
+  console.log(data);
+  return data;
 };
 
 describe('Users Service Create', () => {
+  let usersService: UsersService;
+  let usersModel: Model<User>;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: getModelToken('User'),
+          useValue: {
+            new: jest.fn().mockResolvedValue(createUserDto()),
+            constructor: jest.fn().mockResolvedValue(createUserDto()),
+            find: jest.fn(),
+            create: jest.fn(),
+            exec: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
+    usersModel = module.get<Model<User>>(getModelToken('User'));
   });
 
   it('should be defined', () => {
     expect(usersService).toBeDefined();
   });
 
-  it('should create an user', async () => {
-    const userData = factoryUserData();
+  it('should create a new user', async () => {
+    const userDto = createUserDto();
+    console.log(userDto);
 
-    const user = usersService.create(userData);
+    const jestResult = jest
+      .spyOn(usersModel, 'create')
+      .mockImplementationOnce(() => Promise.resolve(createUserDto()));
 
-    expect(user).toBeDefined;
+    console.log(jestResult, jestResult.mockReturnValue);
+    expect(jestResult.mockResolvedValue).toBeInstanceOf(User);
   });
+
+  // it('', async () => {
+  //   expect.not.stringMatching('');
+  // });
+
+  // it('should create an user', async () => {
+  //   const userData = factoryUserData();
+
+  //   const user = usersService.create(userData);
+
+  //   expect(user).toBeDefined;
+  //   console.log(user);
+  // });
   /* 
   it('should not duplicate an user with same email', async () => {
     expect.not.stringMatching('');
