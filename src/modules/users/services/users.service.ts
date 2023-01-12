@@ -1,16 +1,20 @@
+import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { UsersRepository } from '../repositories/users.repository';
+import { User, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  private readonly usersRepository = new UsersRepository();
+  constructor(
+    @InjectModel(User.name)
+    private usersDocument: Model<UserDocument>,
+  ) {}
 
   // Use Case for creating a new user
   create(createUserDto: CreateUserDto) {
     const isRegistered = async () => {
-      const user = await this.findOneByEmail(createUserDto.email);
+      const user = await this.usersDocument.findOne();
       return user;
     };
 
@@ -19,17 +23,17 @@ export class UsersService {
       throw new Error('This email has been already registered in our base.');
     }
 
-    return this.usersRepository.create(createUserDto);
+    return this.usersDocument.create(createUserDto);
   }
-
+  /* 
   // Return the matching user by user.id
   findOneById(id: string) {
-    return this.usersRepository.findOneById(id);
+    return this.usersDocument.findOneById(id);
   }
 
   // Return the matching user by user.email
   findOneByEmail(email: string) {
-    return this.usersRepository.findOneByEmail(email);
+    return this.usersDocument.findOneByEmail(email);
   }
 
   // List all users
@@ -37,16 +41,16 @@ export class UsersService {
     // todo: add limit
     // todo: add pagination
     // todo: add sorting
-    return this.usersRepository.findAll();
+    return this.usersDocument.findAll();
   }
 
   // Update the matching user with provided data
   update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(id, updateUserDto);
+    return this.usersDocument.update(id, updateUserDto);
   }
 
   // Exclude the matching user
   exclude(id: string) {
-    return this.usersRepository.exclude(id);
-  }
+    return this.usersDocument.exclude(id);
+  } */
 }
