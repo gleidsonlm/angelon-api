@@ -1,68 +1,62 @@
-## Description
+AngelOn API
 
-AngelOn API is the backend implementation for the AngelOn application.
+AngelOn API is the backend implementation for the [AngelOn suite]().
 
-We are using Nest.js framework providing us Node.js, TypeScript, Fastify, Prisma.
-
-## Installation
-
-```bash
-$ npm install
-```
+REST services provided using [Nest.js framework](http://nestjs.com) and other [Tools]().
 
 ## Deployment
 
-    [   ] Docker instructions
+AngelOn currently uses *MongoDB* database through [Mongoose.](https://docs.nestjs.com/techniques/mongodb) by <code>@nestjs/mongoose</code>.
 
-## Running the app
+We **recommend** you to use [*MongoDB Atlas*](https://www.mongodb.com/atlas/database). Their free tier service will allow you to deploy MongoDB using the provider and region of your choice between *AWS*, *Google* and *Azure*.
+
+If you are going to deploy MongoDb manually, be sure to a [replica set](https://www.mongodb.com/docs/manual/replication/).
+
+### Installing
+```bash $
+$ npm install
+```
+
+### Running
 
 ```bash
 # development
 $ npm run start
 
-# watch mode
-$ npm run start:dev
-
 # production mode
 $ npm run start:prod
 ```
 
-## Test
+### Test
 
 ```bash
-# unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Donate
+## Engage
 
-AngelOn is an open source project. You are free to use, modify and redistribuite this code. May God bless you and your church with this work.
+Join us while we are building our API and other blocks on AngelOn project. We can collaborate in many different ways!
 
-Would you like to give back by sponsoring and supporting this project, any ammount will help, even nothing (with prayers). [Read more about donating for this project.]
+### Donate
 
-## Support 
+AngelOn is an open source project. You are free to use, modify and redistribuite this code.
 
-AngelOn is provided without any warrante or promise of support. Please, join our community on Discord where we support each other.
+Would you like to give back by maintening, sponsoring and supporting financely this project, we'll great appretiate regardless the ammount you can donate. [Read more about donating for this project.]
 
-Professional services are available
+### Contributing
+
+Would you like to give back contibuting with code, we kindly ask you to commit your changes through a pull request in our [Github repository]().
+
+### Contracting 
+
+AngelOn is provided without any warrant or promise of support. Professional services are available, contact us at [support@angelon.app](mailto:) for a consultation.
 
 
 ## Stay in touch
 
-- Author - [Gleidson LM](https://linkedin.com/in/gleidsonlm)
-- Discord channel - [AngelOn]()
+- Author Linkedin page - [Gleidson LM](https://linkedin.com/in/gleidsonlm)
+- Community Discord - [AngelOn]()
 
-## License
+May God bless you and empower His church to testify about the Good News.
 
-Nest is [MIT licensed](LICENSE).
-
-## Powered by 
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="50" alt="Nest Logo" /></a>
-</p>
+> "I, Jesus, have sent my messenger (koiné: ἄγγελόν) to give you this testimony for the churches. I am the Root and the Offspring of David, the bright Morning Star." [Revelation 22:16:](https://biblehub.com/interlinear/revelation/22-16.htm)

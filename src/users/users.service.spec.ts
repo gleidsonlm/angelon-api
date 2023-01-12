@@ -1,16 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 
-describe('UsersService', () => {
+describe('Users Service Create', () => {
   let usersService: UsersService;
-  const data: CreateUserDto = {
-    username: 'john.doe',
-    password: 'Password.42',
-    email: 'john.doe@angelon.app',
-    name: 'John Doe',
-    role: 'ADMIN',
+
+  const factoryUserData = (): CreateUserDto => {
+    const userData = {
+      email: `${randomUUID}@angelon.app`,
+      password: 'Password.42',
+      name: 'John Doe',
+      mobile: '5583991446999',
+    };
+    return userData;
   };
 
   beforeEach(async () => {
@@ -26,27 +30,31 @@ describe('UsersService', () => {
   });
 
   it('should create an user', async () => {
+    const data = factoryUserData();
+
     const user = await usersService.create(data);
 
     expect(user).toMatchObject<IUser>({
       id: expect.any(String),
-      username: data.username,
-      password: data.password,
       email: data.email,
+      password: data.password,
       name: data.name,
+      mobile: data.mobile,
       role: 'USER',
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      excludedAt: null,
+      created: expect.any(Date),
+      updated: null,
+      excluded: null,
     });
   });
 
   it('should not duplicate an user', async () => {
-    const user1 = await usersService.create(data);
+    const data1 = factoryUserData();
+    const user1 = await usersService.create(data1);
     console.log(user1);
 
+    const data2 = factoryUserData();
     expect(async () => {
-      const user2 = await usersService.create(data);
+      const user2 = await usersService.create(data2);
       console.log(user2);
     }).not.toMatchObject<IUser>;
   });
