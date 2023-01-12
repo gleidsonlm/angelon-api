@@ -6,20 +6,17 @@ import { User } from '../schemas/user.schema';
 import { UsersService } from './users.service';
 import { Model } from 'mongoose';
 
-const createUserDto = (): CreateUserDto => {
+const createUserDto = () => {
   const uuid = randomUUID() as string;
-  const data = {
+  const data: CreateUserDto = {
     email: `${uuid}@angelon.app`,
     password: 'Password.42',
-    name: 'John Doe',
-    mobile: '14155550132',
   };
-  console.log(data);
   return data;
 };
 
 describe('Users Service Create', () => {
-  let usersService: UsersService;
+  let usersDocument: UsersService;
   let usersModel: Model<User>;
 
   beforeEach(async () => {
@@ -39,24 +36,22 @@ describe('Users Service Create', () => {
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
+    usersDocument = module.get<UsersService>(UsersService);
     usersModel = module.get<Model<User>>(getModelToken('User'));
   });
 
   it('should be defined', () => {
-    expect(usersService).toBeDefined();
+    expect(usersDocument).toBeDefined();
   });
 
   it('should create a new user', async () => {
     const userDto = createUserDto();
-    console.log(userDto);
 
-    const jestResult = jest
-      .spyOn(usersModel, 'create')
-      .mockImplementationOnce(() => Promise.resolve(createUserDto()));
+    jest.spyOn(usersModel, 'create');
+    const newUser = usersDocument.create(userDto);
 
-    console.log(jestResult, jestResult.mockReturnValue);
-    expect(jestResult.mockResolvedValue).toBeInstanceOf(User);
+    console.log(userDto, newUser);
+    expect(newUser).toBeInstanceOf(User);
   });
 
   // it('', async () => {
@@ -66,7 +61,7 @@ describe('Users Service Create', () => {
   // it('should create an user', async () => {
   //   const userData = factoryUserData();
 
-  //   const user = usersService.create(userData);
+  //   const user = usersDocument.create(userData);
 
   //   expect(user).toBeDefined;
   //   console.log(user);
@@ -87,11 +82,11 @@ describe('Users Service Create', () => {
       providers: [UsersService],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
+    usersDocument = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
-    expect(usersService).toBeDefined();
+    expect(usersDocument).toBeDefined();
   });
 
   it('should update own user password & email', async () => {
@@ -117,11 +112,11 @@ describe('Users Service Find', () => {
       providers: [UsersService],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
+    usersDocument = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
-    expect(usersService).toBeDefined();
+    expect(usersDocument).toBeDefined();
   });
 
   it('should be able to list all users', () => {

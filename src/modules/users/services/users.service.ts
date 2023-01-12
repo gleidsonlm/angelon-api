@@ -12,20 +12,18 @@ export class UsersService {
   ) {}
 
   // Use Case for creating a new user
-  create(createUserDto: CreateUserDto) {
-    const isRegistered = async () => {
-      const user = await this.usersDocument.findOne({
-        email: createUserDto.email,
-      });
-
-      return user;
-    };
+  async create(createUserDto: CreateUserDto) {
+    const emailIsRegistred = await this.usersDocument
+      .findOne({ email: `${createUserDto.email}` })
+      .exec();
 
     // Don't creating a new user with already registered email
-    if (isRegistered()) {
+    if (emailIsRegistred) {
       throw new Error('This email has been already registered in our base.');
     }
 
-    return this.usersDocument.create(createUserDto);
+    const user = await this.usersDocument.create(createUserDto);
+
+    return user;
   }
 }
