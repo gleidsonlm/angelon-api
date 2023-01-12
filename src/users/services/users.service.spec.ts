@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { IUser } from './interfaces/user.interface';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { IUser } from '../interfaces/user.interface';
 import { UsersService } from './users.service';
 
 describe('Users Service Create', () => {

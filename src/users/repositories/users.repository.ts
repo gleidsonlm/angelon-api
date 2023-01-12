@@ -1,7 +1,7 @@
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { IUsersRepository } from './interfaces/users.repository.interface';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
+import { IUsersRepository } from '../interfaces/users.repository.interface';
 
 export class UsersRepository implements IUsersRepository {
   create(data: CreateUserDto): Promise<User> {
