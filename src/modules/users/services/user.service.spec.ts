@@ -1,9 +1,9 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { User } from '../schemas/user.schema';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { Model } from 'mongoose';
 
 const createUserDto = () => {
@@ -15,14 +15,14 @@ const createUserDto = () => {
   return data;
 };
 
-describe('Users Service Create', () => {
-  let usersDocument: UsersService;
-  let usersModel: Model<User>;
+describe('User Service Create', () => {
+  let userService: UserService;
+  let userModel: Model<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
+        UserService,
         {
           provide: getModelToken('User'),
           useValue: {
@@ -36,21 +36,20 @@ describe('Users Service Create', () => {
       ],
     }).compile();
 
-    usersDocument = module.get<UsersService>(UsersService);
-    usersModel = module.get<Model<User>>(getModelToken('User'));
+    userService = module.get<UserService>(UserService);
+    userModel = module.get<Model<User>>(getModelToken('User'));
   });
 
   it('should be defined', () => {
-    expect(usersDocument).toBeDefined();
+    expect(userModel).toBeDefined();
   });
 
   it('should create a new user', async () => {
     const userDto = createUserDto();
 
-    jest.spyOn(usersModel, 'create');
-    const newUser = usersDocument.create(userDto);
+    jest.spyOn(userModel, 'create');
+    const newUser = await userService.create(userDto);
 
-    console.log(userDto, newUser);
     expect(newUser).toBeInstanceOf(User);
   });
 
@@ -61,7 +60,7 @@ describe('Users Service Create', () => {
   // it('should create an user', async () => {
   //   const userData = factoryUserData();
 
-  //   const user = usersDocument.create(userData);
+  //   const user = userModel.create(userData);
 
   //   expect(user).toBeDefined;
   //   console.log(user);
@@ -76,17 +75,17 @@ describe('Users Service Create', () => {
   }); */
 });
 
-/* describe('Users Service Update', () => {
+/* describe('User Service Update', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [UserService],
     }).compile();
 
-    usersDocument = module.get<UsersService>(UsersService);
+    userModel = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
-    expect(usersDocument).toBeDefined();
+    expect(userModel).toBeDefined();
   });
 
   it('should update own user password & email', async () => {
@@ -106,17 +105,17 @@ describe('Users Service Create', () => {
   });
 });
 
-describe('Users Service Find', () => {
+describe('User Service Find', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [UserService],
     }).compile();
 
-    usersDocument = module.get<UsersService>(UsersService);
+    userModel = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
-    expect(usersDocument).toBeDefined();
+    expect(userModel).toBeDefined();
   });
 
   it('should be able to list all users', () => {

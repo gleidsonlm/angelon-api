@@ -1,14 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Exclude } from 'class-transformer';
+import { IsEmail } from 'class-validator';
 import { randomUUID } from 'crypto';
 import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
-
-enum Role {
-  ADMIN = 'admin',
-  USER = 'user',
-  GUEST = 'guest',
-}
 
 @Schema()
 export class User {
@@ -18,25 +14,23 @@ export class User {
   })
   userid: string;
 
-  @Prop({
-    match: [
-      RegExp,
-      '/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/',
-    ],
-  })
+  @Prop()
+  @IsEmail()
   email: string;
 
   @Prop({ default: null })
-  password: string | null;
+  @Exclude()
+  password?: string | null;
 
   @Prop({ default: null })
-  excludeAt: Date | null;
+  @Exclude()
+  excludeAt?: Date | null;
 
   @Prop({
-    enum: { ADMIN: 'admin', USER: 'user', GUEST: 'guest' },
-    default: 'USER',
+    enum: ['admin', 'user', 'guest'],
+    default: 'user',
   })
-  role: Role;
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

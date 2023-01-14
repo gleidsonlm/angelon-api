@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../services/users.service';
+import { UserService } from '../services/user.service';
 import { randomUUID } from 'node:crypto';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
 import { User } from '../schemas/user.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -15,14 +15,14 @@ const createUserDto = () => {
   return data;
 };
 
-describe('Users Controller Create', () => {
-  let usersDocument: UsersService;
-  let usersModel: Model<User>;
+describe('User Controller Create', () => {
+  let userModel: UserService;
+  let userModel: Model<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
+        UserService,
         {
           provide: getModelToken('User'),
           useValue: {
@@ -36,11 +36,11 @@ describe('Users Controller Create', () => {
       ],
     }).compile();
 
-    usersDocument = module.get<UsersService>(UsersService);
-    usersModel = module.get<Model<User>>(getModelToken('User'));
+    userModel = module.get<UserService>(UserService);
+    userModel = module.get<Model<User>>(getModelToken('User'));
   });
 
   it('should be defined', () => {
-    expect(usersDocument).toBeDefined();
+    expect(userModel).toBeDefined();
   });
 });
