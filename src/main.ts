@@ -3,9 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentModule } from './libs/database.module';
 
 async function bootstrap() {
-  // Instance the application with the Mongoose "Documento Module",
-  // User Module is instanced within that.
-  const app = await NestFactory.create(DocumentModule);
+  // Nest Factory is the app interface to HTTP
+  // If needed to access the used platform API, goes with type:
+  // NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create(
+    // Instance the application with the Mongoose "Document Module",
+    // User Module is instanced within that.
+    DocumentModule,
+  );
 
   // Validation Pipe provides us decorators like @IsEmail and others.
   // https://docs.nestjs.com/techniques/validation

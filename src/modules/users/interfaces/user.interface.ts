@@ -5,3 +5,8 @@ export interface IUser {
   excludeAt: Date | null;
   role: string;
 }
+
+export interface IResponseUser {
+  userid: string;
+  email: string;
+}

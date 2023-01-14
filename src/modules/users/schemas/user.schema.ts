@@ -14,7 +14,9 @@ export class User {
   })
   userid: string;
 
-  @Prop()
+  @Prop({
+    unique: true,
+  })
   @IsEmail()
   email: string;
 

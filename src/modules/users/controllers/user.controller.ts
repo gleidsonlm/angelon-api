@@ -8,12 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { IResponseUser } from '../interfaces/user.interface';
 import { UserService } from '../services/user.service';
-
-interface IResponseUser {
-  userid: string;
-  email: string;
-}
 
 @Controller('user')
 export class UserController {
@@ -21,31 +17,25 @@ export class UserController {
 
   @Post()
   async create(@Body() data: CreateUserDto) {
-    try {
-      await this.userService.create(data);
+    const user = await this.userService.create(data);
 
-      return HttpStatus.CREATED;
-    } catch (error) {
-      return error;
-    }
+    return user;
   }
 
   @Get()
-  async findOne(@Headers('email') email: string): Promise<IResponseUser> {
-    const user = await this.userService.findOne(email);
+  async findOne(@Headers('userid') userid: string) {
+    const user = await this.userService.findOne(userid);
 
-    //todo: implement JWT, user can be a sub within token.
     if (!user) {
-      throw new HttpException(
+      return new HttpException(
         {
+          message: 'User not found',
           status: HttpStatus.NOT_FOUND,
-          error: `User \/${email}\/ not found`,
         },
         HttpStatus.NOT_FOUND,
       );
     }
 
-    // return user;
     return { userid: user.userid, email: user.email } as IResponseUser;
   }
 }

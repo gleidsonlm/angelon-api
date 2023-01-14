@@ -7,6 +7,10 @@ export class UsersController {
 
   @Get()
   async findAll() {
-    return await this.userService.findAll();
+    const users = await this.userService.findAll();
+    return users.map((user) => ({
+      userid: user.userid,
+      email: user.email,
+    }));
   }
 }

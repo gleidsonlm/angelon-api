@@ -12,36 +12,34 @@ export class UserService {
   ) {}
 
   // Create - Use case for creating an user
-  async create(data: CreateUserDto): Promise<User> {
-    // Check if this user email is registered in the base.
-    const userExists = await this.userModel.findOne({
-      email: data.email,
-    });
+  // @Role('guest') - Should start 1st step of registration
+  // todo: Implement configuration to decide if: { strongPassword(Options) emailConfirmation(boolean), moderatorConfirmation(boolean) }
+  async create(data: CreateUserDto) {
+    const userExits = await this.userModel
+      .findOne({ email: data.email })
+      .exec();
 
-    // If it is, throw error for Controller handling.
-    if (userExists) {
-      throw new HttpException('Email already registered', HttpStatus.CONFLICT);
+    if (userExits) {
+      return new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
-    // Otherwise, creates its data
     const user = await this.userModel.create(data);
-    user.save();
 
-    // And return the user created;
-    return user;
+    return user.save();
   }
 
   // FindOne - Use case for finding an user
-  async findOne(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ email }).exec();
+  // @Role('user') - Should find himself and others when authenticated
+  // todo: requires authentication
+  async findOne(userid: string): Promise<User> {
+    const user = await this.userModel.findOne({ userid }).exec();
 
     return user;
   }
 
-  // FindMany - Use case for finding all users
-  // todo: implement pagination
-  // todo: implement sorting
-  // todo: implement filter(query)
+  // FindMany - Use case for finding and query all users
+  // @Role('admin')
+  // todo: implement { Limit(Pagination), Sorting, Query(Filter) }
   async findAll(): Promise<User[]> {
     const users = await this.userModel.find().exec();
 
