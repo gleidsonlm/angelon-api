@@ -6,7 +6,7 @@ export interface IUser {
   role: string;
 }
 
-export interface IResponseUser {
+export type IResponseUser = Omit<IUser, 'password' | 'excludeAt'> & {
   userid: string;
   email: string;
-}
+};

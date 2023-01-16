@@ -1,46 +1,44 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../services/user.service';
-import { randomUUID } from 'node:crypto';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { User } from '../schemas/user.schema';
 import { getModelToken } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { UserService } from '../services/user.service';
+import { UserController } from './user.controller';
 
-const createUserDto = () => {
-  const uuid = randomUUID() as string;
-  const data: CreateUserDto = {
-    email: `${uuid}@angelon.app`,
+describe('User Service Create', () => {
+  const userDTO: CreateUserDto = {
+    email: 'test@angelo.app',
     password: 'Password.42',
   };
-  return data;
-};
-
-describe('User Controller Create', () => {
-  let userModel: UserService;
-  let userModel: Model<User>;
+  let userService: UserService;
+  let userController: UserController;
 
   beforeEach(async () => {
+    const mockSave = jest.fn().mockResolvedValue(userDTO);
+
+    const mockUserModel = {
+      findOne: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue(null),
+      create: jest.fn().mockResolvedValue({ save: mockSave }),
+      save: mockSave,
+    };
+
     const module: TestingModule = await Test.createTestingModule({
+      controllers: [UserController],
       providers: [
         UserService,
         {
           provide: getModelToken('User'),
-          useValue: {
-            new: jest.fn().mockResolvedValue(createUserDto()),
-            constructor: jest.fn().mockResolvedValue(createUserDto()),
-            find: jest.fn(),
-            create: jest.fn(),
-            exec: jest.fn(),
-          },
+          useValue: mockUserModel,
         },
       ],
     }).compile();
 
-    userModel = module.get<UserService>(UserService);
-    userModel = module.get<Model<User>>(getModelToken('User'));
+    userService = module.get<UserService>(UserService);
+    userController = module.get<UserController>(UserController);
   });
 
   it('should be defined', () => {
-    expect(userModel).toBeDefined();
+    expect(userService).toBeDefined();
+    expect(userController).toBeDefined();
   });
 });

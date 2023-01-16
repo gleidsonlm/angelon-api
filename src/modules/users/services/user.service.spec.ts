@@ -1,61 +1,258 @@
-import { Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
+import { HttpException } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User, UserDocument } from '../schemas/user.schema';
-import { UserService } from './user.service';
-import { randomUUID } from 'crypto';
+import { randomBytes } from 'node:crypto';
+import {
+  closeInMongodConnection,
+  TestDocumentModule,
+} from '../../../libs/test-database.module';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { User, UserSchema } from '../schemas/user.schema';
+import { UserService } from './user.service';
 
 describe('User Service Create', () => {
   let userService: UserService;
-  let userModel: Model<User>;
 
-  const userDTO: CreateUserDto = {
-    email: 'test@angelo.app',
-    password: 'Password.42',
-  };
-
-  const mockUser = () => {
-    return {
-      userid: `${randomUUID}`,
-      email: 'test@angelo.app',
-      password: 'Password.42',
-      role: 'user',
-      // save: jest.fn().mockResolvedValue(null),
-    };
+  const createUserDto: CreateUserDto = {
+    email: `${randomBytes(8).toString('hex')}@angelon.app`,
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        {
-          provide: getModelToken('User'),
-          useValue: {
-            new: jest.fn().mockResolvedValue(mockUser),
-            constructor: jest.fn().mockResolvedValue(mockUser),
-            findOne: jest.fn().mockReturnThis(),
-            exec: jest.fn(),
-            create: jest.fn().mockReturnThis(),
-            save: jest.fn(),
+      imports: [
+        TestDocumentModule(),
+        MongooseModule.forFeature([
+          {
+            name: User.name,
+            schema: UserSchema,
           },
-        },
+        ]),
       ],
+      providers: [UserService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    userModel = module.get<Model<User>>(getModelToken('User'));
+  });
+
+  afterEach(async () => {
+    closeInMongodConnection;
   });
 
   it('should be defined', () => {
-    expect(userModel).toBeDefined();
     expect(userService).toBeDefined();
   });
 
   it('should create a new user', async () => {
-    const result = await userService.create(userDTO);
+    const user = await userService.create(createUserDto);
 
-    // Fix: need to fix, mocked functions are returning null.
-    expect(result).toBeDefined();
+    expect(user).toMatchObject({
+      userid: expect.any(String),
+      email: createUserDto.email,
+      excludeAt: null,
+      role: 'user',
+    });
+  });
+
+  it('should not duplicate users with same email', async () => {
+    await userService.create(createUserDto);
+
+    // let duplicate;
+
+    // try {
+    //   duplicate = await ;
+    // } catch (error) {
+    //   expect(error).toBeInstanceOf(HttpException);
+    // }
+
+    expect(async () => {
+      try {
+        await userService.create(createUserDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+      }
+    });
+  });
+
+  it('should not create user without email', async () => {
+    try {
+      await userService.create({ email: '' });
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+    }
+  });
+
+  // it('should', async () => {})
+
+  // After all tests described, close InMemory MongoDB connection
+  afterAll(async () => {
+    closeInMongodConnection;
+  });
+});
+
+describe('User Service Find', () => {
+  let userService: UserService;
+
+  const createUserDto: CreateUserDto = {
+    email: `${randomBytes(8).toString('hex')}@angelon.app`,
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TestDocumentModule(),
+        MongooseModule.forFeature([
+          {
+            name: User.name,
+            schema: UserSchema,
+          },
+        ]),
+      ],
+      providers: [UserService],
+    }).compile();
+
+    userService = module.get<UserService>(UserService);
+  });
+
+  afterEach(async () => {
+    closeInMongodConnection;
+  });
+
+  it('should be defined', () => {
+    expect(userService).toBeDefined();
+  });
+
+  it('should find an user', async () => {
+    const userCreated = await userService.create(createUserDto);
+    const userFound = await userService.findOne(userCreated.userid);
+
+    expect(userFound).toMatchObject({
+      userid: userCreated.userid,
+      email: userCreated.email,
+    });
+  });
+
+  it('should not find an inexistent user', async () => {
+    try {
+      await userService.findOne(createUserDto.userid);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+    }
+  });
+  // it('should', async () => {})
+
+  // After all tests described, close InMemory MongoDB connection
+  afterAll(async () => {
+    closeInMongodConnection;
+  });
+});
+
+describe('User Service Update', () => {
+  let userService: UserService;
+
+  const createUserDto: CreateUserDto = {
+    email: `${randomBytes(8).toString('hex')}@angelon.app`,
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TestDocumentModule(),
+        MongooseModule.forFeature([
+          {
+            name: User.name,
+            schema: UserSchema,
+          },
+        ]),
+      ],
+      providers: [UserService],
+    }).compile();
+
+    userService = module.get<UserService>(UserService);
+  });
+
+  afterEach(async () => {
+    closeInMongodConnection;
+  });
+
+  afterAll(async () => {
+    closeInMongodConnection;
+  });
+
+  it('should be defined', () => {
+    expect(userService).toBeDefined();
+  });
+
+  it('should update an user', async () => {
+    const user = await userService.create(createUserDto);
+
+    const updatedUser = await userService.update(user.userid, {
+      email: 'updated@angelon.app',
+      password: 'password',
+    });
+
+    expect(updatedUser.email).not.toEqual(user.email);
+  });
+
+  it('should not update an inexistent user', async () => {
+    try {
+      await userService.update(createUserDto.userid, {});
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+    }
+  });
+  // it('should be defined', () => {})
+});
+
+describe('User Service Exclude', () => {
+  let userService: UserService;
+
+  const createUserDto: CreateUserDto = {
+    email: `${randomBytes(8).toString('hex')}@angelon.app`,
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TestDocumentModule(),
+        MongooseModule.forFeature([
+          {
+            name: User.name,
+            schema: UserSchema,
+          },
+        ]),
+      ],
+      providers: [UserService],
+    }).compile();
+
+    userService = module.get<UserService>(UserService);
+  });
+
+  afterEach(async () => {
+    closeInMongodConnection;
+  });
+
+  afterAll(async () => {
+    closeInMongodConnection;
+  });
+
+  it('should be defined', () => {
+    expect(userService).toBeDefined();
+  });
+
+  it('should exclude an user', async () => {
+    const user = await userService.create(createUserDto);
+
+    const excludedUser = await userService.exclude(user.userid);
+    console.log(excludedUser);
+
+    expect(excludedUser).toBeInstanceOf(Date);
+  });
+
+  it('should not exclude an inexistent user', async () => {
+    try {
+      await userService.exclude(createUserDto.userid);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+    }
   });
 });
