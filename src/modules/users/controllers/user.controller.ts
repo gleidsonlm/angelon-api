@@ -1,41 +1,54 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
-  HttpException,
-  HttpStatus,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { IResponseUser } from '../interfaces/user.interface';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from '../services/user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post()
+  @Post('/')
   async create(@Body() data: CreateUserDto) {
     const user = await this.userService.create(data);
 
     return user;
   }
 
-  @Get()
+  @Get('/')
   async findOne(@Headers('userid') userid: string) {
     const user = await this.userService.findOne(userid);
 
-    if (!user) {
-      return new HttpException(
-        {
-          message: 'User not found',
-          status: HttpStatus.NOT_FOUND,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    return user;
+  }
 
-    return { userid: user.userid, email: user.email } as IResponseUser;
+  @Get('/:userid')
+  async find() {
+    const users = await this.userService.find();
+
+    return users;
+  }
+
+  // @Put('/') // Not Implemented
+
+  @Patch('/:userid')
+  async update(@Headers('userid') userid: string, @Body() data: UpdateUserDto) {
+    const user = await this.userService.update(userid, data);
+
+    return user;
+  }
+
+  @Delete('/:userid')
+  async delete(@Headers('userid') userid: string) {
+    const user = await this.userService.exclude(userid);
+
+    return user;
   }
 }

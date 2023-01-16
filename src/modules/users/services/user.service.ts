@@ -49,7 +49,7 @@ export class UserService {
     return { userid, email } as IResponseUser;
   }
 
-  // Find - Use case for finding and query all users
+  // Find - Use case for finding and query other users
   // @Role('admin')
   // todo: implement { Limit(Pagination), Sorting, Query(Filter) }
   async find(): Promise<IResponseUser[]> {
