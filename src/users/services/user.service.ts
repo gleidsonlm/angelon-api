@@ -5,7 +5,6 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { IResponseUser } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { IsEmail } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -39,36 +38,35 @@ export class UserService {
   // FindOne - Use case for finding an user
   // @Role('admin','user','self') - Should find himself and others when authenticated
   // todo: requires authentication
-  async findOne(userid: string): Promise<IResponseUser> {
+  async findOne(userid: string): Promise<User> {
     const user = await this.userModel.findOne({ userid }).exec();
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const { email } = user;
+    return user;
+  }
 
-    return { userid, email } as IResponseUser;
+  // FindOneByEmail - Use case for finding an user by email address
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ email }).exec();
+    return user;
   }
 
   // Find - Use case for finding and query other users
   // @Role('admin')
   // todo: implement { Limit(Pagination), Sorting, Query(Filter) }
-  async find(): Promise<IResponseUser[]> {
+  async find(): Promise<User[]> {
     const users = await this.userModel.find();
 
-    const responseUsers = users.map((user) => ({
-      userid: user.userid,
-      email: user.email,
-    }));
-
-    return responseUsers as IResponseUser[];
+    return users;
   }
 
   // Update - Use case for updating an user
   // @Role('admin','self')
   // todo: requires authentication
-  async update(userid: string, data: UpdateUserDto): Promise<IResponseUser> {
+  async update(userid: string, data: UpdateUserDto): Promise<User> {
     const user = await this.userModel.findOneAndUpdate(
       { userid },
       { email: data.email, password: data.password },
@@ -79,9 +77,7 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const { email } = user;
-
-    return { userid, email } as IResponseUser;
+    return user;
   }
 
   // Exclude - Use case for updating an user
@@ -98,8 +94,6 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const { excludeAt } = user;
-
-    return { userid, excludeAt };
+    return user;
   }
 }
