@@ -14,15 +14,7 @@ async function bootstrap() {
 
   // Validation Pipe provides us decorators like @IsEmail and others.
   // https://docs.nestjs.com/techniques/validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      // Strips request from any unmapped proprieties.
-      // If no other suitable decorator, use @Allow.
-      whitelist: true,
-      // Auto-transform payload objects into DTO types.
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe());
 
   // Instance app listener
   await app.listen(3000);

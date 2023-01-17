@@ -1,6 +1,5 @@
 import { HttpException } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomBytes } from 'node:crypto';
 import {
@@ -64,7 +63,7 @@ describe('User Service Create', () => {
     });
   });
 
-  it('should not create user without email', async () => {
+  it('should not create user with invalid email', async () => {
     try {
       await userService.create({ email: '' });
     } catch (error) {
