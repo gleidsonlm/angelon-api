@@ -1,5 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomBytes } from 'node:crypto';
 import {
@@ -244,9 +245,11 @@ describe('User Service Exclude', () => {
     const user = await userService.create(createUserDto);
 
     const excludedUser = await userService.exclude(user.userid);
-    console.log(excludedUser);
 
-    expect(excludedUser).toBeInstanceOf(Date);
+    expect(excludedUser).toMatchObject({
+      userid: user.userid,
+      excludeAt: expect.any(Date),
+    });
   });
 
   it('should not exclude an inexistent user', async () => {

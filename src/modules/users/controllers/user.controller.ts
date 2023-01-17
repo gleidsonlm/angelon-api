@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
   Patch,
   Post,
@@ -40,14 +39,14 @@ export class UserController {
   // @Put('/') // Not Implemented
 
   @Patch('/:userid')
-  async update(@Headers('userid') userid: string, @Body() data: UpdateUserDto) {
+  async update(@Param('userid') userid: string, @Body() data: UpdateUserDto) {
     const user = await this.userService.update(userid, data);
 
     return user;
   }
 
   @Delete('/:userid')
-  async exclude(@Headers('userid') userid: string) {
+  async exclude(@Param('userid') userid: string) {
     const user = await this.userService.exclude(userid);
 
     return user;

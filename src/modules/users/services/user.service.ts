@@ -5,6 +5,7 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { IResponseUser } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { IsEmail } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -17,10 +18,6 @@ export class UserService {
   // @Role('admin','guest') - Should start 1st step of registration
   // todo: Implement configuration to decide if: { strongPassword(Options) emailConfirmation(boolean), moderatorConfirmation(boolean) }
   async create(data: CreateUserDto) {
-    if (!data.email) {
-      throw new HttpException('Must have an email', HttpStatus.CONFLICT);
-    }
-
     const userExits = await this.userModel
       .findOne({ email: data.email })
       .exec();
@@ -30,7 +27,10 @@ export class UserService {
     }
 
     const userCreated = await this.userModel.create(data);
-    const userSaved = await userCreated.save({ validateBeforeSave: true });
+    const userSaved = await userCreated.save({
+      validateBeforeSave: true,
+      checkKeys: true,
+    });
     const { userid, email } = userSaved;
 
     return { userid, email } as IResponseUser;
@@ -87,10 +87,10 @@ export class UserService {
   // Exclude - Use case for updating an user
   // @Role('admin','self')
   // todo: requires authentication
-  async exclude(userid: string): Promise<Date> {
+  async exclude(userid: string) {
     const user = await this.userModel.findOneAndUpdate(
       { userid },
-      { excludeAt: new Date() },
+      { $currentDate: { excludeAt: true } },
       { new: true },
     );
 
@@ -98,6 +98,8 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    return user.excludeAt as Date;
+    const { excludeAt } = user;
+
+    return { userid, excludeAt };
   }
 }
