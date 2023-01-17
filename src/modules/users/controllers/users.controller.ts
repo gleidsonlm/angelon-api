@@ -5,12 +5,12 @@ import { UserService } from '../services/user.service';
 export class UsersController {
   constructor(private userService: UserService) {}
 
-  @Get()
+  /*   @Get()
   async findAll() {
     const users = await this.userService.findAll();
     return users.map((user) => ({
       userid: user.userid,
       email: user.email,
     }));
-  }
+  } */
 }

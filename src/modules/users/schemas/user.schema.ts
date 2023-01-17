@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
 import { IsEmail } from 'class-validator';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
@@ -10,7 +10,7 @@ export type UserDocument = HydratedDocument<User>;
 export class User {
   @Prop({
     unique: true,
-    default: `${randomUUID()}`,
+    default: randomUUID(),
   })
   userid: string;
 

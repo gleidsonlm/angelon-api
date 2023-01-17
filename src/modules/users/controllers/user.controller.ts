@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Headers,
+  Param,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -23,15 +24,15 @@ export class UserController {
   }
 
   @Get('/')
-  async findOne(@Headers('userid') userid: string) {
-    const user = await this.userService.findOne(userid);
+  async find() {
+    const users = await this.userService.find();
 
-    return user;
+    return users;
   }
 
   @Get('/:userid')
-  async find() {
-    const users = await this.userService.find();
+  async findOne(@Param('userid') userid: string) {
+    const users = await this.userService.findOne(userid);
 
     return users;
   }
@@ -46,7 +47,7 @@ export class UserController {
   }
 
   @Delete('/:userid')
-  async delete(@Headers('userid') userid: string) {
+  async exclude(@Headers('userid') userid: string) {
     const user = await this.userService.exclude(userid);
 
     return user;

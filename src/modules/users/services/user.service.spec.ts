@@ -48,21 +48,11 @@ describe('User Service Create', () => {
     expect(user).toMatchObject({
       userid: expect.any(String),
       email: createUserDto.email,
-      excludeAt: null,
-      role: 'user',
     });
   });
 
-  it('should not duplicate users with same email', async () => {
+  it('should not duplicate an user', async () => {
     await userService.create(createUserDto);
-
-    // let duplicate;
-
-    // try {
-    //   duplicate = await ;
-    // } catch (error) {
-    //   expect(error).toBeInstanceOf(HttpException);
-    // }
 
     expect(async () => {
       try {
@@ -80,8 +70,6 @@ describe('User Service Create', () => {
       expect(error).toBeInstanceOf(HttpException);
     }
   });
-
-  // it('should', async () => {})
 
   // After all tests described, close InMemory MongoDB connection
   afterAll(async () => {
@@ -121,7 +109,7 @@ describe('User Service Find', () => {
     expect(userService).toBeDefined();
   });
 
-  it('should find an user', async () => {
+  it('should find one user', async () => {
     const userCreated = await userService.create(createUserDto);
     const userFound = await userService.findOne(userCreated.userid);
 
@@ -131,6 +119,20 @@ describe('User Service Find', () => {
     });
   });
 
+  it('should find many users', async () => {
+    await userService.create(createUserDto);
+
+    const users = await userService.find();
+    expect(users).toMatchObject(
+      expect.arrayContaining([
+        expect.objectContaining({
+          userid: expect.any(String),
+          email: createUserDto.email,
+        }),
+      ]),
+    );
+  });
+
   it('should not find an inexistent user', async () => {
     try {
       await userService.findOne(createUserDto.userid);
@@ -138,7 +140,6 @@ describe('User Service Find', () => {
       expect(error).toBeInstanceOf(HttpException);
     }
   });
-  // it('should', async () => {})
 
   // After all tests described, close InMemory MongoDB connection
   afterAll(async () => {

@@ -29,9 +29,11 @@ export class UserService {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
-    const user = await this.userModel.create(data);
+    const userCreated = await this.userModel.create(data);
+    const userSaved = await userCreated.save({ validateBeforeSave: true });
+    const { userid, email } = userSaved;
 
-    return user.save();
+    return { userid, email } as IResponseUser;
   }
 
   // FindOne - Use case for finding an user
@@ -53,7 +55,7 @@ export class UserService {
   // @Role('admin')
   // todo: implement { Limit(Pagination), Sorting, Query(Filter) }
   async find(): Promise<IResponseUser[]> {
-    const users = await this.userModel.find().exec();
+    const users = await this.userModel.find();
 
     const responseUsers = users.map((user) => ({
       userid: user.userid,
