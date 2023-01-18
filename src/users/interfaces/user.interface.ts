@@ -9,4 +9,5 @@ export interface IUser {
 export type IResponseUser = Omit<IUser, 'password' | 'excludeAt' | 'role'> & {
   userid: string;
   email: string;
+  password: string | null;
 };

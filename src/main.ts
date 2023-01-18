@@ -1,6 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentModule } from './libs/database.module';
+import { DocumentModule } from './libs/mongoose/database.module';
 
 async function bootstrap() {
   // Nest Factory is the app interface to HTTP

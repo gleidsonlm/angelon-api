@@ -6,10 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   TestDocumentModule,
   closeInMongodConnection,
-} from '../src/libs/test-database.module';
-import { UserModule } from '../src/modules/users/user.module';
-import { User, UserSchema } from '../src/modules/users/schemas/user.schema';
-import { CreateUserDto } from 'src/modules/users/dtos/create-user.dto';
+} from '../src/libs/mongoose/test-database.module';
+import { UserModule } from '../src/users/user.module';
+import { User, UserSchema } from '../src/users/schemas/user.schema';
+import { CreateUserDto } from '../src/users/dtos/create-user.dto';
 
 describe('User E2E tests', () => {
   let app: INestApplication;
