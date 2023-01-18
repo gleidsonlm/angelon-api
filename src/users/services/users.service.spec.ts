@@ -8,7 +8,7 @@ import {
 } from '../../libs/mongoose/test-database.module';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { User, UserSchema } from '../schemas/user.schema';
-import { UserService } from './user.service';
+import { UserService } from './users.service';
 
 describe('User Service Create', () => {
   let userService: UserService;
