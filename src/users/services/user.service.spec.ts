@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto';
 import {
   closeInMongodConnection,
   TestDocumentModule,
-} from '../../../libs/test-database.module';
+} from '../../libs/mongoose/test-database.module';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { User, UserSchema } from '../schemas/user.schema';
 import { UserService } from './user.service';
