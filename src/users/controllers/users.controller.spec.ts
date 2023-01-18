@@ -8,8 +8,8 @@ import {
 } from '../../libs/mongoose/test-database.module';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { User, UserSchema } from '../schemas/user.schema';
-import { UserService } from '../services/user.service';
-import { UserController } from './user.controller';
+import { UserService } from '../services/users.service';
+import { UserController } from './users.controller';
 
 describe('User Controller Create', () => {
   let userController: UserController;
@@ -247,10 +247,7 @@ describe('User Controller Exclude', () => {
 
     const excludedUser = await userController.exclude(user.userid);
 
-    expect(excludedUser).toMatchObject({
-      userid: user.userid,
-      excludeAt: expect.any(Date),
-    });
+    expect(excludedUser).toBeInstanceOf(Date);
   });
 
   it('should not exclude an inexistent user', async () => {
