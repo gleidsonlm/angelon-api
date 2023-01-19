@@ -14,10 +14,11 @@ export class UserService {
   ) {}
 
   /* Users Use Cases
-   * create - receives email and password (opcional), check if users exists, create the user object and saves in the database. Returns the user saved.
+   * create - receives userDto, check if users exists, create the user object and saves in the database. Returns the user saved.
    * findOne - receives an userid and returns one matching user, if exists.
    * findOneByEmail - receives an email and returns one matching user, if exists.
    * find - receives the request and returns all users.
+   * put - receives userDto and updates the user, if existent, or create and save a new user.
    * update - receives email and or password, check if users exists, update the user object in the database. Returns the updated user.
    * exclude - receives an userid and update the "excludeAt" user object propriety and returns the date and time of the exclusion. Doesn't permanentely remove the user object from the database.
    */
@@ -39,7 +40,6 @@ export class UserService {
   }
 
   // FindOne - Use case for finding one user
-  // todo: requires authentication
   async findOne(userid: string): Promise<User> {
     const user = await this.userModel.findOne({ userid }).exec();
 
@@ -57,7 +57,6 @@ export class UserService {
   }
 
   // Find - Use case for finding and query other users
-  // @Role('admin')
   // todo: implement { Limit(Pagination), Sorting, Query(Filter) }
   async find(): Promise<User[]> {
     const users = await this.userModel.find();
@@ -65,9 +64,14 @@ export class UserService {
     return users;
   }
 
+  // Put - Use case for updating or creating an user
+  async put(data: UpdateUserDto): Promise<User> {
+    const user = await this.userModel.create(data);
+
+    return user.save();
+  }
+
   // Update - Use case for updating an user
-  // @Role('admin','self')
-  // todo: requires authentication
   async update(userid: string, data: UpdateUserDto): Promise<User> {
     const user = await this.userModel.findOneAndUpdate(
       { userid },
@@ -83,8 +87,6 @@ export class UserService {
   }
 
   // Exclude - Use case for updating an user
-  // @Role('admin','self')
-  // todo: requires authentication
   async exclude(userid: string) {
     const user = await this.userModel.findOneAndUpdate(
       { userid },

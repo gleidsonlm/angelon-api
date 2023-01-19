@@ -17,7 +17,7 @@
     "test:watch": "jest --detectOpenHandles --watch",
     "test:cov": "jest --detectOpenHandles --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --detectOpenHandles --runInBand",
-    "test:e2e": "jest --detectOpenHandles --watch --config ./test/jest-e2e.json"
+    "test:e2e": "jest --detectOpenHandles --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

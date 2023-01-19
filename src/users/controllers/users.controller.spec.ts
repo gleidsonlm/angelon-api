@@ -34,6 +34,7 @@ describe('User Controller Create', () => {
       providers: [UserService],
       controllers: [UserController],
     }).compile();
+
     userController = module.get<UserController>(UserController);
   });
 
@@ -185,7 +186,7 @@ describe('User Controller Update', () => {
   it('should update an user', async () => {
     const user = await userController.create(createUserDto());
 
-    const updatedUser = await userController.update(user.userid, {
+    const updatedUser = await userController.patch(user.userid, {
       email: 'update1@angelon.app',
     });
 
@@ -197,7 +198,7 @@ describe('User Controller Update', () => {
 
   it('should not update an inexistent user', async () => {
     try {
-      await userController.update('userid', {
+      await userController.patch('userid', {
         email: 'update1@angelo.app',
       });
     } catch (error) {

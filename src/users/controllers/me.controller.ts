@@ -6,19 +6,18 @@ import {
   Patch,
   Post,
   UseGuards,
-  Put,
-  Param,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from '../services/users.service';
+import { Public } from '../../libs/passport/public.decorator';
 import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
 import { IResponseUser } from '../interfaces/user.interface';
-import { Public } from '../../libs/passport/public.decorator';
 
 @UseGuards(JwtAuthGuard)
-@Controller('users')
-export class UserController {
+@Controller('me')
+export class MeController {
   constructor(private userService: UserService) {}
 
   @Public()
@@ -36,32 +35,8 @@ export class UserController {
   }
 
   @Get('/')
-  async find(): Promise<IResponseUser[]> {
-    const users = await this.userService.find();
-
-    //map users and return only userid, email and role.
-    return users.map((users) => ({
-      userid: users.userid,
-      email: users.email,
-      role: users.role,
-    }));
-  }
-
-  @Get('/:userid')
-  async findOne(@Param('userid') userid: string): Promise<IResponseUser> {
-    const user = await this.userService.findOne(userid);
-
-    const response = {
-      userid: user.userid,
-      email: user.email,
-      role: user.role,
-    };
-    return response;
-  }
-
-  @Put('/')
-  async update(@Body() data: CreateUserDto): Promise<IResponseUser> {
-    const user = await this.userService.put(data);
+  async findOne(@Request() request): Promise<IResponseUser> {
+    const user = await this.userService.findOne(request.user.userid);
 
     const response = {
       userid: user.userid,
@@ -72,12 +47,12 @@ export class UserController {
     return response;
   }
 
-  @Patch('/:userid')
-  async patch(
-    @Param() userid: string,
+  @Patch('/')
+  async update(
+    @Request() request,
     @Body() data: UpdateUserDto,
   ): Promise<IResponseUser> {
-    const user = await this.userService.update(userid, data);
+    const user = await this.userService.update(request.user.userid, data);
 
     const response = {
       userid: user.userid,
@@ -88,9 +63,9 @@ export class UserController {
     return response;
   }
 
-  @Delete('/:userid')
-  async exclude(@Param() userid: string) {
-    const user = await this.userService.exclude(userid);
+  @Delete('/')
+  async exclude(@Request() request) {
+    const user = await this.userService.exclude(request.user.userid);
 
     const { excludeAt } = user;
     return excludeAt;
