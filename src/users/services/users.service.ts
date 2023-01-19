@@ -41,7 +41,7 @@ export class UserService {
 
   // FindOne - Use case for finding one user
   async findOne(userid: string): Promise<User> {
-    const user = await this.userModel.findOne({ userid }).exec();
+    const user = await this.userModel.findOne({ userid: userid }).exec();
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -52,7 +52,7 @@ export class UserService {
 
   // FindOneByEmail - Use case for finding an user by email address
   async findOneByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ email }).exec();
+    const user = await this.userModel.findOne({ email: email }).exec();
     return user;
   }
 
@@ -77,6 +77,12 @@ export class UserService {
       { userid },
       { email: data.email, password: data.password },
       { new: true },
+      function (error, result) {
+        if (error) {
+          console.log(error);
+        }
+        console.log(result);
+      },
     );
 
     if (!user) {

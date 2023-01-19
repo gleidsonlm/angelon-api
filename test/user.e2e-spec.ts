@@ -19,7 +19,7 @@ describe('User E2E tests', () => {
 
   const data: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
-    password: `${randomBytes(8).toString('hex')}`,
+    password: `${randomBytes(24).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -116,14 +116,15 @@ describe('User E2E tests', () => {
     });
 
     const updatedUser = await request(app.getHttpServer())
-      .patch('/users/' + user.body.userid)
-      .set('Authorization', 'Bearer ' + login.body.access_token)
+      .patch(`/users/${user.body.userid}`)
+      .set('Authorization', `Bearer ${login.body.access_token}`)
       .send({
         email: 'updated@angelon.app',
       });
-    console.log(user.body.userid, typeof user.body.userid);
-    console.log(updatedUser.body);
-    expect(true).toBe(false);
+    console.log(typeof login.body.access_token);
+
+    expect(updatedUser.body.email).not.toEqual(user.body.email);
+    expect(updatedUser.body.email).toEqual('updated@angelon.app');
   });
 
   it('DELETE /users/:userid excludes one user', async () => {

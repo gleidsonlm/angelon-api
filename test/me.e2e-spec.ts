@@ -20,7 +20,7 @@ describe('Me E2E tests', () => {
   const createUserDto = (): CreateUserDto => {
     return {
       email: `${randomBytes(8).toString('hex')}@angelon.app`,
-      password: `${randomBytes(64).toString('hex')}`,
+      password: `${randomBytes(12).toString('hex')}`,
     };
   };
 

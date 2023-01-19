@@ -14,10 +14,10 @@ export class User {
   })
   userid: string;
 
+  @IsEmail()
   @Prop({
     unique: true,
   })
-  @IsEmail()
   email: string;
 
   @Prop({ default: null })
