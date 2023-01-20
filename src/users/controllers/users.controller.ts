@@ -36,6 +36,17 @@ export class UserController {
     };
   }
 
+  @Put('/')
+  async put(@Body() data: CreateUserDto): Promise<IResponseUser> {
+    const user = await this.userService.put(data);
+
+    return {
+      userid: user.userid,
+      email: user.email,
+      roles: user.roles,
+    };
+  }
+
   @Get('/')
   async find(): Promise<IResponseUser[]> {
     const users = await this.userService.find();
@@ -59,40 +70,12 @@ export class UserController {
     };
   }
 
-  @Put('/:userid')
-  async update(
-    @Param() userid: string,
-    @Body() data: CreateUserDto,
-  ): Promise<IResponseUser> {
-    const user = await this.userService.put(userid, data);
-
-    return {
-      userid: user.userid,
-      email: user.email,
-      roles: user.roles,
-    };
-  }
-
   @Patch('/:userid')
   async patch(
     @Param() userid: string,
     @Body() data: UpdateUserDto,
   ): Promise<IResponseUser> {
     const user = await this.userService.patch(userid, data);
-
-    return {
-      userid: user.userid,
-      email: user.email,
-      roles: user.roles,
-    };
-  }
-
-  @Put('/:userid')
-  async put(
-    @Param() userid: string,
-    @Body() data: CreateUserDto,
-  ): Promise<IResponseUser> {
-    const user = await this.userService.put(userid, data);
 
     return {
       userid: user.userid,

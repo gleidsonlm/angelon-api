@@ -15,11 +15,11 @@ export class UserService {
 
   /* Users Use Cases
    * create - receives userDto, check if users exists, create the user object and saves in the database. Returns the user saved.
+   * put - receives userDto and updates the user, if existent, or create and save a new user.
    * findOne - receives an userid and returns one matching user, if exists.
    * findOneByEmail - receives an email and returns one matching user, if exists.
    * find - receives the request and returns all users.
    * patch - receives the userid in the request and data in the body to update user data;
-   * put - receives userDto and updates the user, if existent, or create and save a new user.
    * update - receives email and or password, check if users exists, update the user object in the database. Returns the updated user.
    * exclude - receives an userid and update the "excludeAt" user object propriety and returns the date and time of the exclusion. Doesn't permanentely remove the user object from the database.
    */
@@ -36,6 +36,22 @@ export class UserService {
     }
 
     const user = await this.userModel.create(data);
+
+    return user.save();
+  }
+
+  // Put = Create an user if inexistent, else update it
+  async put(data: CreateUserDto): Promise<User> {
+    const { email } = data;
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      const user = await this.userModel.create(data);
+
+      return user.save();
+    }
+
+    Object.assign(user, data);
 
     return user.save();
   }
@@ -76,15 +92,6 @@ export class UserService {
     }
 
     return user;
-  }
-
-  // Put - Use case for updating or creating an user
-  async put(_userid: string, data: CreateUserDto): Promise<User> {
-    const user = await this.userModel
-      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
-      .exec();
-
-    return user.save();
   }
 
   // Update - Use case for updating an user

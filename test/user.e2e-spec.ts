@@ -133,16 +133,21 @@ describe('User E2E tests', () => {
       email: data.email,
       password: data.password,
     });
+    const { sub } = login.body.user;
+    const { access_token } = login.body;
 
     const excludeAt = await request(app.getHttpServer())
-      .delete('/users/' + login.body.user.userid, (error, response) => {
+      .delete('/users/' + sub, (error, response) => {
         expect(error).toBeNull();
         expect(response.status).toBe(200);
       })
-      .set('Authorization', 'Bearer ' + login.body.access_token);
+      .set('Authorization', 'Bearer ' + access_token);
 
-    expect(excludeAt.body).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
-    );
+    expect(excludeAt.body).toMatchObject({
+      excludeAt: expect.stringMatching(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+      ),
+      userid: sub,
+    });
   });
 });
