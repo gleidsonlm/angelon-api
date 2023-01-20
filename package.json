@@ -13,11 +13,11 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest --detectOpenHandles --runInBand",
-    "test:watch": "jest --detectOpenHandles --runInBand --watch",
-    "test:cov": "jest --detectOpenHandles --runInBand --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --detectOpenHandles --runInBand",
-    "test:e2e": "jest --detectOpenHandles --runInBand --config ./test/jest-e2e.json"
+    "test": "jest --detectOpenHandles --forceExit --runInBand",
+    "test:watch": "jest --detectOpenHandles --forceExit --runInBand --watch",
+    "test:cov": "jest --detectOpenHandles --forceExit --runInBand --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --detectOpenHandles --forceExit --runInBand",
+    "test:e2e": "jest --detectOpenHandles --forceExit --runInBand --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -35,7 +35,8 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "uuid-mongodb": "^2.5.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

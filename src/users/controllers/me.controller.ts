@@ -5,15 +5,16 @@ import {
   Get,
   Patch,
   Post,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from '../services/users.service';
 import { Public } from '../../libs/passport/public.decorator';
-import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
+
 import { IResponseUser } from '../interfaces/user.interface';
+import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('me')
@@ -25,26 +26,22 @@ export class MeController {
   async create(@Body() data: CreateUserDto): Promise<IResponseUser> {
     const user = await this.userService.create(data);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-
-    return response;
   }
 
   @Get('/')
   async findOne(@Request() request): Promise<IResponseUser> {
     const user = await this.userService.findOne(request.user.userid);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-
-    return response;
   }
 
   @Patch('/')
@@ -52,15 +49,13 @@ export class MeController {
     @Request() request,
     @Body() data: UpdateUserDto,
   ): Promise<IResponseUser> {
-    const user = await this.userService.update(request.user.userid, data);
+    const user = await this.userService.patch(request.user.userid, data);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-
-    return response;
   }
 
   @Delete('/')

@@ -248,12 +248,16 @@ describe('User Controller Exclude', () => {
 
     const excludedUser = await userController.exclude(user.userid);
 
-    expect(excludedUser).toBeInstanceOf(Date);
+    expect(excludedUser).toMatchObject({
+      userid: user.userid,
+      excludeAt: expect.any(Date),
+    });
   });
 
   it('should not exclude an inexistent user', async () => {
     try {
-      await userController.exclude('userid');
+      const user = await userController.exclude('userid');
+      expect(user).toThrow(HttpException);
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
     }

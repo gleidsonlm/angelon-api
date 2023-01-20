@@ -5,18 +5,21 @@ import {
   Get,
   Patch,
   Post,
-  UseGuards,
   Put,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from '../services/users.service';
-import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
 import { IResponseUser } from '../interfaces/user.interface';
 import { Public } from '../../libs/passport/public.decorator';
+import { Roles } from '../../roles/decorators/roles.decorator';
+import { Role } from '../../roles/enums/role.enum';
+import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
 
 @UseGuards(JwtAuthGuard)
+@Roles(Role.User)
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -26,13 +29,11 @@ export class UserController {
   async create(@Body() data: CreateUserDto): Promise<IResponseUser> {
     const user = await this.userService.create(data);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-
-    return response;
   }
 
   @Get('/')
@@ -43,7 +44,7 @@ export class UserController {
     return users.map((users) => ({
       userid: users.userid,
       email: users.email,
-      role: users.role,
+      roles: users.roles,
     }));
   }
 
@@ -51,25 +52,25 @@ export class UserController {
   async findOne(@Param('userid') userid: string): Promise<IResponseUser> {
     const user = await this.userService.findOne(userid);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-    return response;
   }
 
-  @Put('/')
-  async update(@Body() data: CreateUserDto): Promise<IResponseUser> {
-    const user = await this.userService.put(data);
+  @Put('/:userid')
+  async update(
+    @Param() userid: string,
+    @Body() data: CreateUserDto,
+  ): Promise<IResponseUser> {
+    const user = await this.userService.put(userid, data);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
-
-    return response;
   }
 
   @Patch('/:userid')
@@ -77,22 +78,36 @@ export class UserController {
     @Param() userid: string,
     @Body() data: UpdateUserDto,
   ): Promise<IResponseUser> {
-    const user = await this.userService.update(userid, data);
+    const user = await this.userService.patch(userid, data);
 
-    const response = {
+    return {
       userid: user.userid,
       email: user.email,
-      role: user.role,
+      roles: user.roles,
     };
+  }
 
-    return response;
+  @Put('/:userid')
+  async put(
+    @Param() userid: string,
+    @Body() data: CreateUserDto,
+  ): Promise<IResponseUser> {
+    const user = await this.userService.put(userid, data);
+
+    return {
+      userid: user.userid,
+      email: user.email,
+      roles: user.roles,
+    };
   }
 
   @Delete('/:userid')
   async exclude(@Param() userid: string) {
     const user = await this.userService.exclude(userid);
 
-    const { excludeAt } = user;
-    return excludeAt;
+    return {
+      userid: user.userid,
+      excludeAt: user.excludeAt,
+    };
   }
 }

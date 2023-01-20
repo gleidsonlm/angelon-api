@@ -18,6 +18,7 @@ export class UserService {
    * findOne - receives an userid and returns one matching user, if exists.
    * findOneByEmail - receives an email and returns one matching user, if exists.
    * find - receives the request and returns all users.
+   * patch - receives the userid in the request and data in the body to update user data;
    * put - receives userDto and updates the user, if existent, or create and save a new user.
    * update - receives email and or password, check if users exists, update the user object in the database. Returns the updated user.
    * exclude - receives an userid and update the "excludeAt" user object propriety and returns the date and time of the exclusion. Doesn't permanentely remove the user object from the database.
@@ -40,8 +41,8 @@ export class UserService {
   }
 
   // FindOne - Use case for finding one user
-  async findOne(userid: string): Promise<User> {
-    const user = await this.userModel.findOne({ userid: userid }).exec();
+  async findOne(_userid: string): Promise<User> {
+    const user = await this.userModel.findOne({ userid: _userid }).exec();
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -64,26 +65,33 @@ export class UserService {
     return users;
   }
 
+  // Patch - Use case for updaing selected field in the user objetc
+  async patch(_userid: string, data: Partial<UpdateUserDto>): Promise<User> {
+    const user = await this.userModel
+      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
+  }
+
   // Put - Use case for updating or creating an user
-  async put(data: UpdateUserDto): Promise<User> {
-    const user = await this.userModel.create(data);
+  async put(_userid: string, data: CreateUserDto): Promise<User> {
+    const user = await this.userModel
+      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
+      .exec();
 
     return user.save();
   }
 
   // Update - Use case for updating an user
-  async update(userid: string, data: UpdateUserDto): Promise<User> {
-    const user = await this.userModel.findOneAndUpdate(
-      { userid },
-      { email: data.email, password: data.password },
-      { new: true },
-      function (error, result) {
-        if (error) {
-          console.log(error);
-        }
-        console.log(result);
-      },
-    );
+  async update(_userid: string, data: UpdateUserDto): Promise<User> {
+    const user = await this.userModel
+      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
+      .exec();
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -93,9 +101,9 @@ export class UserService {
   }
 
   // Exclude - Use case for updating an user
-  async exclude(userid: string) {
+  async exclude(_userid: string) {
     const user = await this.userModel.findOneAndUpdate(
-      { userid },
+      { _userid },
       { $currentDate: { excludeAt: true } },
       { new: true },
     );

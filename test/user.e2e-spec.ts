@@ -121,7 +121,6 @@ describe('User E2E tests', () => {
       .send({
         email: 'updated@angelon.app',
       });
-    console.log(typeof login.body.access_token);
 
     expect(updatedUser.body.email).not.toEqual(user.body.email);
     expect(updatedUser.body.email).toEqual('updated@angelon.app');

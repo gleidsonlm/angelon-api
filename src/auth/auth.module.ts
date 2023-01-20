@@ -11,7 +11,9 @@ import { JwtStrategy } from '../libs/passport/jwt.strategy';
 @Module({
   imports: [
     UserModule,
-    PassportModule,
+    PassportModule.register({
+      session: true,
+    }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '300s' },
