@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { Role } from '../interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
    * findOneByEmail - receives an email and returns one matching user, if exists.
    * find - receives the request and returns all users.
    * patch - receives the userid in the request and data in the body to update user data;
+   * staff - receives the userid in the request and toggle staff role;
    * update - receives email and or password, check if users exists, update the user object in the database. Returns the updated user.
    * exclude - receives an userid and update the "excludeAt" user object propriety and returns the date and time of the exclusion. Doesn't permanentely remove the user object from the database.
    */
@@ -57,8 +59,8 @@ export class UserService {
   }
 
   // FindOne - Use case for finding one user
-  async findOne(_userid: string): Promise<User> {
-    const user = await this.userModel.findOne({ userid: _userid }).exec();
+  async findOne(userid: string): Promise<User> {
+    const user = await this.userModel.findOne({ userid: userid }).exec();
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -81,23 +83,60 @@ export class UserService {
     return users;
   }
 
-  // Patch - Use case for updaing selected field in the user objetc
-  async patch(_userid: string, data: Partial<UpdateUserDto>): Promise<User> {
-    const user = await this.userModel
-      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
+  // Patch - Use case for updating selected field in the user objetc
+  async patch(userid: string, data: Partial<UpdateUserDto>): Promise<User> {
+    const thisUser = await this.userModel
+      .findOneAndUpdate({ userid }, { $set: data }, { new: true })
       .exec();
 
-    if (!user) {
+    if (!thisUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    return user;
+    return thisUser;
+  }
+
+  //* staff - receives the userid in the request and toggle staff role;
+  // Staff - Use case for toggling user's staff role
+  async staff(_userid: string) {
+    // findOne user...
+    console.log(_userid);
+    const target = await this.userModel.findOne({ user: _userid }).exec();
+    // ... or throw HttpException
+    if (!target) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    // try find an user.roles element matching 'staff'
+    const staffed = target.roles.some((role) => role.enum === Role.Staff);
+    console.log(staffed);
+    let updatedUser;
+    // If they are already staff,
+    if (staffed === true) {
+      updatedUser = await this.userModel.findOneAndUpdate(
+        { userid: target.userid },
+        {
+          $pull: { roles: { enum: 'staff' } },
+        },
+        { new: true },
+      );
+    } else {
+      // if they are not staff
+      updatedUser = await this.userModel.findOneAndUpdate(
+        { userid: target.userid },
+        {
+          $push: { roles: { enum: 'staff' } },
+        },
+        { new: true },
+      );
+    }
+    console.log(updatedUser);
+    return updatedUser;
   }
 
   // Update - Use case for updating an user
-  async update(_userid: string, data: UpdateUserDto): Promise<User> {
+  async update(userid: string, data: UpdateUserDto): Promise<User> {
     const user = await this.userModel
-      .findOneAndUpdate({ _userid }, { $set: data }, { new: true })
+      .findOneAndUpdate({ userid }, { $set: data }, { new: true })
       .exec();
 
     if (!user) {
@@ -108,9 +147,9 @@ export class UserService {
   }
 
   // Exclude - Use case for updating an user
-  async exclude(_userid: string) {
+  async exclude(userid: string) {
     const user = await this.userModel.findOneAndUpdate(
-      { _userid },
+      { userid },
       { $currentDate: { excludeAt: true } },
       { new: true },
     );
