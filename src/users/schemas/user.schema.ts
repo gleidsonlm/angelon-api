@@ -2,13 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
 import { IsEmail } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
-import { Role } from '../interfaces/user.interface';
+import { IUser, Role } from '../interfaces/user.interface';
 import { v4 as uuid } from 'uuid-mongodb';
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
-export class User {
+export class User implements IUser {
   // todo: implement generate uuid from email or _id
   @Prop({
     unique: true,
@@ -25,13 +25,13 @@ export class User {
   //todo: implement pass crypt
   @Prop({ default: null })
   @Exclude()
-  password?: string | null;
+  password: string | null;
 
   @Prop({ default: null })
   @Exclude()
-  excludeAt?: Date | null;
+  excludeAt: Date | null;
 
-  @Prop({ default: [Role.User] })
+  @Prop({ default: [{ enum: Role.Guest }] })
   roles: [{ enum: Role }];
 }
 

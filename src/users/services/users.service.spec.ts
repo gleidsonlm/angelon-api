@@ -204,6 +204,71 @@ describe('User Service Update', () => {
   // it('should be defined', () => {})
 });
 
+describe('User Service Patch', () => {
+  let userService: UserService;
+
+  const createUserDto: CreateUserDto = {
+    email: `${randomBytes(8).toString('hex')}@angelon.app`,
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TestDocumentModule(),
+        MongooseModule.forFeature([
+          {
+            name: User.name,
+            schema: UserSchema,
+          },
+        ]),
+      ],
+      providers: [UserService],
+    }).compile();
+
+    userService = module.get<UserService>(UserService);
+  });
+
+  afterEach(async () => {
+    closeInMongodConnection;
+  });
+
+  afterAll(async () => {
+    closeInMongodConnection;
+  });
+
+  it('should be defined', () => {
+    expect(userService).toBeDefined();
+  });
+
+  it('should patch an user', async () => {
+    const user = await userService.create(createUserDto);
+
+    const patchedUserByEmail = await userService.update(user.userid, {
+      email: 'updated@angelon.app',
+    });
+
+    const patchedUserByPassword = await userService.update(user.userid, {
+      password: 'updatedPassword',
+    });
+
+    const patchedUserByBoth = await userService.update(user.userid, {
+      email: 'updatedAgain@angelon.app',
+      password: null,
+    });
+
+    expect(patchedUserByEmail.email).not.toEqual(user.email);
+    expect(patchedUserByPassword.email).not.toEqual(user.password);
+    expect(patchedUserByBoth.email).not.toEqual(user.email);
+    expect(patchedUserByBoth.email).not.toEqual(user.password);
+  });
+
+  // it('should toggle user as staff', async () => {
+  //   const user = await userService.create(createUserDto);
+  //   const staffed = await userService.staff(user.userid);
+  //   expect(staffed.roles).toContainEqual({ enum: Role.Staff });
+  // });
+});
+
 describe('User Service Exclude', () => {
   let userService: UserService;
 

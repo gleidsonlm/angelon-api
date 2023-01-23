@@ -13,16 +13,18 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from '../services/users.service';
 import { Public } from '../../libs/passport/public.decorator';
 
-import { IResponseUser } from '../interfaces/user.interface';
+import { IResponseUser, Role } from '../interfaces/user.interface';
 import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
+import { Roles } from '../../roles/decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard)
+@Roles(Role.Guest)
 @Controller('me')
 export class MeController {
   constructor(private userService: UserService) {}
 
   @Public()
-  @Post('/')
+  @Post()
   async create(@Body() data: CreateUserDto): Promise<IResponseUser> {
     const user = await this.userService.create(data);
 
@@ -33,7 +35,7 @@ export class MeController {
     };
   }
 
-  @Get('/')
+  @Get()
   async findOne(@Request() request): Promise<IResponseUser> {
     const user = await this.userService.findOne(request.user.userid);
 
@@ -44,7 +46,7 @@ export class MeController {
     };
   }
 
-  @Patch('/')
+  @Patch()
   async update(
     @Request() request,
     @Body() data: UpdateUserDto,
@@ -58,7 +60,7 @@ export class MeController {
     };
   }
 
-  @Delete('/')
+  @Delete()
   async exclude(@Request() request) {
     const user = await this.userService.exclude(request.user.userid);
 
