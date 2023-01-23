@@ -9,6 +9,7 @@ import { RolesGuard } from '../roles/guards/roles.guard';
 import { JwtAuthGuard } from '../libs/passport/jwt.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../libs/passport/constants';
+import { MeService } from './services/me.service';
 
 @Global()
 @Module({
@@ -22,6 +23,8 @@ import { jwtConstants } from '../libs/passport/constants';
   controllers: [UserController, MeController],
   providers: [
     UserService,
+    MeService,
+
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

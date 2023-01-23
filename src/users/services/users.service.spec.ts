@@ -15,6 +15,7 @@ describe('User Service Create', () => {
 
   const createUserDto: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
+    password: `${randomBytes(8).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -35,7 +36,7 @@ describe('User Service Create', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {
@@ -65,7 +66,10 @@ describe('User Service Create', () => {
 
   it('should not create user with invalid email', async () => {
     try {
-      await userService.create({ email: '' });
+      await userService.create({
+        email: '',
+        password: createUserDto.password,
+      });
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
     }
@@ -73,7 +77,7 @@ describe('User Service Create', () => {
 
   // After all tests described, close InMemory MongoDB connection
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 });
 
@@ -82,6 +86,7 @@ describe('User Service Find', () => {
 
   const createUserDto: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
+    password: `${randomBytes(8).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -102,7 +107,7 @@ describe('User Service Find', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {
@@ -143,7 +148,7 @@ describe('User Service Find', () => {
 
   // After all tests described, close InMemory MongoDB connection
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 });
 
@@ -152,6 +157,7 @@ describe('User Service Update', () => {
 
   const createUserDto: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
+    password: `${randomBytes(8).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -172,11 +178,11 @@ describe('User Service Update', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {
@@ -186,7 +192,7 @@ describe('User Service Update', () => {
   it('should update an user', async () => {
     const user = await userService.create(createUserDto);
 
-    const updatedUser = await userService.update(user.userid, {
+    const updatedUser = await userService.patch(user.userid, {
       email: 'updated@angelon.app',
       password: 'password',
     });
@@ -196,7 +202,7 @@ describe('User Service Update', () => {
 
   it('should not update an inexistent user', async () => {
     try {
-      await userService.update(createUserDto.userid, {});
+      await userService.patch(createUserDto.userid, {});
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
     }
@@ -209,6 +215,7 @@ describe('User Service Patch', () => {
 
   const createUserDto: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
+    password: `${randomBytes(8).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -229,11 +236,11 @@ describe('User Service Patch', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {
@@ -243,15 +250,15 @@ describe('User Service Patch', () => {
   it('should patch an user', async () => {
     const user = await userService.create(createUserDto);
 
-    const patchedUserByEmail = await userService.update(user.userid, {
+    const patchedUserByEmail = await userService.patch(user.userid, {
       email: 'updated@angelon.app',
     });
 
-    const patchedUserByPassword = await userService.update(user.userid, {
+    const patchedUserByPassword = await userService.patch(user.userid, {
       password: 'updatedPassword',
     });
 
-    const patchedUserByBoth = await userService.update(user.userid, {
+    const patchedUserByBoth = await userService.patch(user.userid, {
       email: 'updatedAgain@angelon.app',
       password: null,
     });
@@ -274,6 +281,7 @@ describe('User Service Exclude', () => {
 
   const createUserDto: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
+    password: `${randomBytes(8).toString('hex')}@angelon.app`,
   };
 
   beforeEach(async () => {
@@ -294,11 +302,11 @@ describe('User Service Exclude', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {

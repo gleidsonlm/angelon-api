@@ -10,23 +10,23 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { UserService } from '../services/users.service';
 import { Public } from '../../libs/passport/public.decorator';
 
 import { IResponseUser, Role } from '../interfaces/user.interface';
 import { JwtAuthGuard } from '../../libs/passport/jwt.guard';
 import { Roles } from '../../roles/decorators/roles.decorator';
+import { MeService } from '../services/me.service';
 
 @UseGuards(JwtAuthGuard)
 @Roles(Role.Guest)
 @Controller('me')
 export class MeController {
-  constructor(private userService: UserService) {}
+  constructor(private meService: MeService) {}
 
   @Public()
   @Post()
   async create(@Body() data: CreateUserDto): Promise<IResponseUser> {
-    const user = await this.userService.create(data);
+    const user = await this.meService.create(data);
 
     return {
       userid: user.userid,
@@ -37,7 +37,7 @@ export class MeController {
 
   @Get()
   async findOne(@Request() request): Promise<IResponseUser> {
-    const user = await this.userService.findOne(request.user.userid);
+    const user = await this.meService.findOne(request.user.userid);
 
     return {
       userid: user.userid,
@@ -47,11 +47,11 @@ export class MeController {
   }
 
   @Patch()
-  async update(
-    @Request() request,
+  async patch(
+    @Request() request: { user: { userid: string } },
     @Body() data: UpdateUserDto,
   ): Promise<IResponseUser> {
-    const user = await this.userService.patch(request.user.userid, data);
+    const user = await this.meService.patch(request.user.userid, data);
 
     return {
       userid: user.userid,
@@ -62,7 +62,7 @@ export class MeController {
 
   @Delete()
   async exclude(@Request() request) {
-    const user = await this.userService.exclude(request.user.userid);
+    const user = await this.meService.exclude(request.user.userid);
 
     const { excludeAt } = user;
     return excludeAt;

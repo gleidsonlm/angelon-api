@@ -38,11 +38,11 @@ describe('AuthController', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should be defined', () => {
