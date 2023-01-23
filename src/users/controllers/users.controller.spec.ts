@@ -39,11 +39,11 @@ describe('User Controller Create', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should create an user', async () => {
@@ -68,7 +68,7 @@ describe('User Controller Create', () => {
   it('should not create an user with invalid email', async () => {
     //todo: fix CreateUserDto @IsEmail() decorator not working?
     try {
-      const user = await userController.create({ email: 'test' });
+      const user = await userController.create(createUserDto);
 
       expect(user).toThrow(HttpException);
     } catch (error) {
@@ -106,11 +106,11 @@ describe('User Controller Find', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should find one user', async () => {
@@ -176,11 +176,11 @@ describe('User Controller Update', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should update an user', async () => {
@@ -236,11 +236,11 @@ describe('User Controller Exclude', () => {
   });
 
   afterEach(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   afterAll(async () => {
-    closeInMongodConnection;
+    closeInMongodConnection();
   });
 
   it('should exclude an user', async () => {

@@ -6,5 +6,5 @@ export class CreateUserDto extends PartialType(User) {
   @IsEmail()
   email: string;
 
-  password?: string;
+  password: string;
 }

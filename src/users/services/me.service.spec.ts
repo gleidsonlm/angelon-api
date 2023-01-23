@@ -5,11 +5,10 @@ import {
   TestDocumentModule,
 } from '../../libs/mongoose/test-database.module';
 import { User, UserSchema } from '../schemas/user.schema';
-import { MeService } from '../services/me.service';
-import { MeController } from './me.controller';
+import { MeService } from './me.service';
 
-describe('MeController', () => {
-  let controller: MeController;
+describe('MeService', () => {
+  let service: MeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,14 +22,9 @@ describe('MeController', () => {
         ]),
       ],
       providers: [MeService],
-      controllers: [MeController],
     }).compile();
 
-    controller = module.get<MeController>(MeController);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+    service = module.get<MeService>(MeService);
   });
 
   afterEach(async () => {
@@ -39,5 +33,9 @@ describe('MeController', () => {
 
   afterAll(async () => {
     closeInMongodConnection();
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 });

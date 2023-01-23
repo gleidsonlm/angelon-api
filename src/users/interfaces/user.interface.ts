@@ -8,7 +8,7 @@ export enum Role {
 export interface IUser {
   userid: string;
   email: string;
-  password: string | null;
+  password: string;
   excludeAt: Date | null;
   roles: [{ enum: Role }];
 }
