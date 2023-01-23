@@ -13,13 +13,16 @@ import { CreateUserDto } from '../src/users/dtos/create-user.dto';
 import { AuthModule } from '../src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../src/libs/passport/constants';
+import { Role } from '../src/users/interfaces/user.interface';
+import { JwtAuthGuard } from '../src/libs/passport/jwt.guard';
+import { RolesGuard } from '../src/roles/guards/roles.guard';
 
 describe('User E2E tests', () => {
   let app: INestApplication;
 
   const data: CreateUserDto = {
     email: `${randomBytes(8).toString('hex')}@angelon.app`,
-    password: `${randomBytes(24).toString('hex')}`,
+    password: `${randomBytes(8).toString('hex')}`,
   };
 
   beforeEach(async () => {
@@ -39,8 +42,11 @@ describe('User E2E tests', () => {
           signOptions: { expiresIn: '300s' },
         }),
       ],
-    }).compile();
-
+    })
+      .overrideProvider(JwtAuthGuard)
+      .useClass(RolesGuard)
+      .compile();
+    // Instantiate App
     app = moduleRef.createNestApplication();
     await app.init();
   });
@@ -56,7 +62,17 @@ describe('User E2E tests', () => {
   });
 
   it('POST /users creates an user', async () => {
-    const user = await request(app.getHttpServer()).post('/me').send(data);
+    const adminDto = {
+      email: data.email,
+      password: data.password,
+      roles: { enum: Role.Admin },
+    };
+    console.log(adminDto);
+    const access_token: string | null = null;
+    const user = await request(app.getHttpServer())
+      .post('/users')
+      .send(data)
+      .set('Authorization', `Bearer ${access_token}`);
 
     expect(user.body.userid).toBeDefined;
     expect(user.body.email).toBe(data.email);
@@ -97,14 +113,6 @@ describe('User E2E tests', () => {
     expect(userFound.body.email).toBe(user.body.email);
     expect(userFound.body.userid).toBe(user.body.userid);
     expect(userFound.status).toBe(200);
-  });
-
-  it('PUT /users updates or creates an user', async () => {
-    const user = await request(app.getHttpServer()).post('/users').send(data);
-
-    expect(user.body.userid).toBeDefined;
-    expect(user.body.email).toBe(data.email);
-    expect(user.status).toBe(201);
   });
 
   it('PATCH /users/:userid updates one user', async () => {

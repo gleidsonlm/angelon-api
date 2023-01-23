@@ -13,6 +13,7 @@ import { CreateUserDto } from '../src/users/dtos/create-user.dto';
 import { AuthModule } from '../src/auth/auth.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { jwtConstants } from '../src/libs/passport/constants';
+import { RolesModule } from '../src/roles/roles.module';
 
 describe('Auth E2E tests', () => {
   let app: INestApplication;
@@ -27,7 +28,6 @@ describe('Auth E2E tests', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        UserModule,
         TestDocumentModule(),
         MongooseModule.forFeature([
           {
@@ -35,7 +35,9 @@ describe('Auth E2E tests', () => {
             schema: UserSchema,
           },
         ]),
+        UserModule,
         AuthModule,
+        RolesModule,
         JwtModule.register({
           secret: jwtConstants.secret,
           signOptions: { expiresIn: '300s' },
@@ -60,7 +62,7 @@ describe('Auth E2E tests', () => {
   it(`GET /auth/login authenticates one user`, async () => {
     const data = createUserDto();
 
-    const user = await request(app.getHttpServer()).post('/users').send(data);
+    const user = await request(app.getHttpServer()).post('/me').send(data);
 
     const login = await request(app.getHttpServer()).post('/auth/login').send({
       email: data.email,
@@ -89,7 +91,7 @@ describe('Auth E2E tests', () => {
   it(`GET /profile returns user profile`, async () => {
     const data = createUserDto();
 
-    await request(app.getHttpServer()).post('/users').send(data);
+    await request(app.getHttpServer()).post('/me').send(data);
 
     const login = await request(app.getHttpServer()).post('/auth/login').send({
       email: data.email,
