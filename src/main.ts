@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ApplicationModule } from './application.module';
 
 declare const module: any;
@@ -15,6 +16,17 @@ async function bootstrap() {
   // Validation Pipe provides us decorators like @IsEmail and others.
   // https://docs.nestjs.com/techniques/validation
   app.useGlobalPipes(new ValidationPipe());
+  //
+  const config = new DocumentBuilder()
+    .setTitle('AngelOn API')
+    .setDescription(
+      'AngelOn API is the backend implementation for the AngelOn project.',
+    )
+    .setVersion('0.1')
+    .addTag('angelon')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
   // Hot-Module Replacement
   // https://docs.nestjs.com/recipes/hot-reload#hot-module-replacement
   if (module.hot) {
