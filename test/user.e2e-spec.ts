@@ -14,8 +14,8 @@ import { AuthModule } from '../src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../src/libs/passport/constants';
 import { Role } from '../src/users/interfaces/user.interface';
-import { JwtAuthGuard } from '../src/libs/passport/jwt.guard';
 import { RolesGuard } from '../src/roles/guards/roles.guard';
+import { MockGuard } from '../src/libs/passport/mock.guard';
 
 describe('User E2E tests', () => {
   let app: INestApplication;
@@ -43,8 +43,8 @@ describe('User E2E tests', () => {
         }),
       ],
     })
-      .overrideProvider(JwtAuthGuard)
-      .useClass(RolesGuard)
+      .overrideProvider(RolesGuard)
+      .useClass(MockGuard)
       .compile();
     // Instantiate App
     app = moduleRef.createNestApplication();

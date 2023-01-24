@@ -26,12 +26,14 @@ import { MeService } from './services/me.service';
     MeService,
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useExisting: RolesGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useExisting: JwtAuthGuard,
     },
+    RolesGuard,
+    JwtAuthGuard,
   ],
   exports: [UserService],
 })
