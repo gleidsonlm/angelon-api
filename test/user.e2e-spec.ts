@@ -62,12 +62,6 @@ describe('User E2E tests', () => {
   });
 
   it('POST /users creates an user', async () => {
-    const adminDto = {
-      email: data.email,
-      password: data.password,
-      roles: { enum: Role.Admin },
-    };
-    console.log(adminDto);
     const access_token: string | null = null;
     const user = await request(app.getHttpServer())
       .post('/users')
